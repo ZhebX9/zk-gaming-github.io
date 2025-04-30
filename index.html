@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spend Simulator</title>
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: #5D4AFF;
+            color: white;
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+        
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+        }
+        
+        header p {
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+        
+        /* Money Display */
+        .money-display {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 2rem auto;
+            padding: 1.5rem;
+            text-align: center;
+            max-width: 800px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .money-display h2 {
+            font-size: 1.2rem;
+            color: #333;
+            margin-right: 1rem;
+        }
+        
+        .money {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #0C9E51;
+        }
+        
+        .reset-btn {
+            background-color: #FFD2D2;
+            color: #D32F2F;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        
+        .reset-btn:hover {
+            background-color: #FFBABA;
+        }
+        
+        /* Items Container */
+        .items-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        
+        /* Item Card */
+        .item-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 0.75rem;
+            padding: 1.5rem;
+            text-align: center;
+            width: 250px;
+            transition: transform 0.2s;
+        }
+        
+        .item-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .item-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .item-name {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .item-price {
+            color: #555;
+            margin-bottom: 0.75rem;
+        }
+        
+        .item-count {
+            color: #777;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .item-actions {
+            display: flex;
+            justify-content: center;
+        }
+        
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background-color: #5D4AFF;
+            color: white;
+            font-size: 1.2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 0.25rem;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .action-btn:hover {
+            background-color: #4A38DD;
+        }
+        
+        .action-btn:disabled {
+            background-color: #B4B4B4;
+            cursor: not-allowed;
+        }
+        
+        .minus {
+            background-color: #E0E0E0;
+            color: #333;
+        }
+        
+        .minus:hover {
+            background-color: #D0D0D0;
+        }
+        
+        .minus:disabled {
+            background-color: #E8E8E8;
+            color: #B4B4B4;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: #E0E0E0;
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        footer p {
+            color: #555;
+        }
+        
+        footer a {
+            color: #5D4AFF;
+            text-decoration: none;
+        }
+        
+        footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Make item cards responsive */
+        @media (max-width: 768px) {
+            .items-container {
+                padding: 0.5rem;
+            }
+            
+            .item-card {
+                width: calc(50% - 1.5rem);
+                margin: 0.5rem;
+                padding: 1rem;
+            }
+            
+            .money-display {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .item-card {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>💵 Spend Simulator</h1>
+        <p>Ever wondered what spending a fortune feels like? Simulate spending <span class="total-amount">$100,000,000,000</span> on a shopping spree! Pick items below and see if you can spend it all!</p>
+    </header>
+    
+    <div class="money-display">
+        <div>
+            <h2>Your Remaining Fortune: <span class="money" id="money">$100,000,000,000</span></h2>
+        </div>
+        <button class="reset-btn" id="resetAll">↺ Reset All</button>
+    </div>
+    
+    <div class="items-container" id="itemsContainer">
+        <!-- Items will be dynamically added here -->
+    </div>
+    
+    <footer>
+        <p>Made for fun. Inspired by <a href="https://neal.fun/spend/" target="_blank">neal.fun Spend</a>.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initial amount
+            const INITIAL_AMOUNT = 100000000000; // $100 billion
+            let currentAmount = INITIAL_AMOUNT;
+            
+            // Item data
+            const items = [
+                { id: 1, name: 'Big Mac', price: 5, icon: '🍔', count: 0 },
+                { id: 2, name: 'Coffee', price: 4, icon: '☕', count: 0 },
+                { id: 3, name: 'Book', price: 15, icon: '📘', count: 0 },
+                { id: 4, name: 'Game Console', price: 400, icon: '🎮', count: 0 },
+                { id: 5, name: 'Laptop', price: 2000, icon: '💻', count: 0 },
+                { id: 6, name: 'Sports Car', price: 80000, icon: '🚗', count: 0 },
+                { id: 7, name: 'Luxury House', price: 5000000, icon: '🏠', count: 0 },
+                { id: 8, name: 'Private Jet', price: 45000000, icon: '✈️', count: 0 },
+                { id: 9, name: 'Space Mission', price: 2000000000, icon: '🚀', count: 0 },
+                { id: 10, name: 'University Endowment', price: 1000000000, icon: '🏛️', count: 0 },
+                { id: 11, name: 'Global Charity', price: 100000000, icon: '💗', count: 0 }
+            ];
+            
+            // Format number as currency
+            function formatCurrency(amount) {
+                return '$' + amount.toLocaleString('en-US');
+            }
+            
+            // Update money display
+            function updateMoneyDisplay() {
+                document.getElementById('money').textContent = formatCurrency(currentAmount);
+            }
+            
+            // Create item cards
+            function createItemCards() {
+                const container = document.getElementById('itemsContainer');
+                container.innerHTML = '';
+                
+                items.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'item-card';
+                    
+                    card.innerHTML = `
+                        <div class="item-icon">${item.icon}</div>
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-price">${formatCurrency(item.price)}</div>
+                        <div class="item-count">Bought: <span id="count-${item.id}">${item.count}</span></div>
+                        <div class="item-actions">
+                            <button class="action-btn minus" id="minus-${item.id}" ${item.count === 0 ? 'disabled' : ''}>-</button>
+                            <button class="action-btn plus" id="plus-${item.id}" ${currentAmount < item.price ? 'disabled' : ''}>+</button>
+                        </div>
+                    `;
+                    
+                    container.appendChild(card);
+                    
+                    // Add event listeners for buttons
+                    document.getElementById(`minus-${item.id}`).addEventListener('click', () => decreaseItem(item.id));
+                    document.getElementById(`plus-${item.id}`).addEventListener('click', () => increaseItem(item.id));
+                });
+            }
+            
+            // Increase item count
+            function increaseItem(itemId) {
+                const item = items.find(i => i.id === itemId);
+                if (currentAmount >= item.price) {
+                    item.count++;
+                    currentAmount -= item.price;
+                    updateMoneyDisplay();
+                    updateItemCount(itemId);
+                    updateButtonStates();
+                }
+            }
+            
+            // Decrease item count
+            function decreaseItem(itemId) {
+                const item = items.find(i => i.id === itemId);
+                if (item.count > 0) {
+                    item.count--;
+                    currentAmount += item.price;
+                    updateMoneyDisplay();
+                    updateItemCount(itemId);
+                    updateButtonStates();
+                }
+            }
+            
+            // Update item count display
+            function updateItemCount(itemId) {
+                const item = items.find(i => i.id === itemId);
+                document.getElementById(`count-${itemId}`).textContent = item.count;
+            }
+            
+            // Update button states based on current amount and item counts
+            function updateButtonStates() {
+                items.forEach(item => {
+                    const minusBtn = document.getElementById(`minus-${item.id}`);
+                    const plusBtn = document.getElementById(`plus-${item.id}`);
+                    
+                    if (minusBtn && plusBtn) {
+                        minusBtn.disabled = item.count === 0;
+                        plusBtn.disabled = currentAmount < item.price;
+                    }
+                });
+            }
+            
+            // Reset everything
+            function resetAll() {
+                currentAmount = INITIAL_AMOUNT;
+                items.forEach(item => {
+                    item.count = 0;
+                });
+                updateMoneyDisplay();
+                createItemCards();
+            }
+            
+            // Initialize
+            updateMoneyDisplay();
+            createItemCards();
+            
+            // Reset button event listener
+            document.getElementById('resetAll').addEventListener('click', resetAll);
+        });
+    </script>
+</body>
+</html>
